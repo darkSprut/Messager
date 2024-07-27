@@ -1,0 +1,169 @@
+@font-face {
+
+    font-family: 'Muller';
+    src: local('MullerMedium'),
+    url('../fonts/MullerMedium.woff') format('woff'),
+    url('../fonts/MullerMedium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+
+}
+
+@font-face {
+
+font-family: 'Muller';
+src: local('MullerRegular'),
+url('../fonts/MullerRegular.woff') format('woff'),
+url('../fonts/MullerRegular.woff2') format('woff2');
+font-weight: 400;
+font-style: normal;
+font-display: swap;
+
+}
+
+@font-face {
+
+font-family: 'Muller';
+src: local('MullerExtraBold'),
+url('../fonts/MullerExtraBold.woff') format('woff'),
+url('../fonts/MullerExtraBold.woff2') format('woff2');
+font-weight: 700;
+font-style: normal;
+font-display: swap;
+
+}
+
+@font-face {
+
+font-family: 'Muller';
+src: local('MullerRegularItalic'),
+url('../fonts/MullerRegularItalic.woff') format('woff'),
+url('../fonts/MullerRegularItalic.woff2') format('woff2');
+font-weight: 400;
+font-style: italic;
+font-display: swap;
+
+}
+
+@font-face {
+
+font-family: 'Nexa';
+src: local('Nexa'),
+url('../fonts/nexa-script-bold.woff2') format('woff2');
+font-weight: 500;
+font-style: normal;
+font-display: swap;
+
+}
+
+
+@font-face {
+
+font-family: 'RussoOne';
+src: local('RussoOne'),
+url('../fonts/russo-one.woff2') format('woff2');
+font-weight: 400;
+font-style: normal;
+font-display: swap;
+
+}
+
+:root {
+    --color-theme: #1f9b30;
+    --border-radius: 20px;
+    --font-color: white;
+    --gap: 20px;
+    
+}
+
+html {
+    font-family: 'Muller';
+    color: var(--font-color);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+h1, h2, h3, h4, h5 {
+    padding: 0;
+    margin: 0;
+}
+
+.main-title {
+    visibility: hidden;
+}
+
+.container {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    margin-bottom: 60px;
+}
+
+.block {
+    padding: 20px;
+    border-radius: var(--border-radius);
+    background: linear-gradient(150deg, rgb(143, 238, 176) 1%, 18%, transparent 80%);
+    background-color: var(--color-theme);
+    filter: drop-shadow(2px 2px 2px var(--color-theme));
+}
+
+.title {
+    font-weight: 500;
+    margin-bottom: var(--gap);
+
+}
+
+.list__item {
+    position: relative;
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    filter: drop-shadow(1px 1px 1px white);
+    transition: transform 0.2s ease-in-out;
+}
+
+.list__item:hover {
+    transform: scale(1.05, 1.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.list__item:not(:last-child) {
+    margin-bottom: var(--gap);
+}
+
+.list__link {
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    color: black;
+    cursor: pointer;
+    gap: 10px;
+}
+
+.list__link::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
