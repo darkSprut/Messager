@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+
+        {% endblock %}
+    </title>
+    <link rel="shortcut icon" href="{% static 'frontend/img/logo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'frontend/css/normalize.css' %}"/>
+    <link rel="stylesheet" href="{% static 'frontend/css/style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'frontend/css/profile.css' %}"/>
+    <script src="{% static 'frontend/vue-3.4.30/package/dist/vue.global.js' %}"></script>
+    <script src="{% static 'frontend/axios-1.7.2/package/dist/axios.min.js' %}"></script>
+    <script defer src="{% static 'frontend/scripts/app.js' %}" type="module"></script>
+    <script defer src="{% static 'frontend/scripts/show-section.js' %}" type="module"></script>
+    {% block mixin %}
+    {% endblock %}
+</head>
+<body>
+    <div id="body">
+        <header class="header">
+            <div class="container flex-row flex-row-sp-between">
+                <nav class="nav">
+                    <ul class="nav__list">
+                        <li class="nav__item">
+                            <a class="nav__link link" href="#">
+                                link
+                            </a>
+                        </li>
+                        <li class="nav__item">
+                            <a class="nav__link link" href="#">
+                                link
+                            </a>
+                        </li>
+                        <li class="nav__item">
+                            <a class="nav__link link" href="#">
+                                link
+                            </a>
+                        </li>
+                        <li class="nav__item">
+                            <a class="nav__link link" href="#">
+                                link
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                {% if user.is_authenticated %}
+                <div class="header__block flex-row">
+                    <button class="user-badge" tabindex="0" id="user-badge">
+                        <img :src="avatar.image" :alt="avatar.alt" width="50">
+                        <span>
+                            ${ user.username }$
+                        </span>
+                    </button> 
+                    <a class="btn" href="{% url 'log-out' %}">
+                        Выйти
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+        <main class="main">
+            <section class="section section--show" id="profile-section">
+                <div class="container">
+                    <h2 class="title-h2">
+                        Профиль
+                    </h2>
+                    <div class="profile-content">
+                        <img class="profile-content__img" :src="avatar.image" :alt="avatar.alt">
+                        <ul class="profile-content__list">
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    username:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ user.username }$
+                                </p>
+                            </li>
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    Имя:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ profile.name }$
+                                </p>
+                            </li>
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    Возраст:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ profile.age }$
+                                </p>
+                            </li>
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    О себе:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ profile.bio }$
+                                </p>
+                            </li>
+                        </ul>
+                        <button class="btn" id="profile-change-btn">
+                            Редактировать
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <section class="section" id="profile-section-change"> 
+                <div class="container">
+                    <h2 class="title-h2">
+                        Редактировать профиль
+                    </h2>
+                    <p v-if="errors" class="profile-change-err">
+                        ${ errors }$
+                    </p>
+                    <form class="profile-form" method="post" action="#" @submit.prevent="changeAvatar" enctype="multipart/form-data" id="form-avatar">
+                        {% csrf_token %}
+                        <label class="label"> avatar
+                            <input type="file" name="avatar_form" accept="image/*">
+                        </label>
+                        <button class="btn">
+                            Отправить фото
+                        </button>
+                    </form>
+                    <form class="profile-form" method="post" action="#" @submit.prevent="changeProfile">
+                        {% csrf_token %}
+                        <label class="label"> Имя
+                            <input class="input" type="text" v-model="profile.name">
+                        </label>
+                        <label class="label">Возраст
+                            <input class="input" type="number" max="100" min="0" v-model="profile.age">
+                        </label>
+                        <label class="label">О себе
+                            <textarea class="textarea" v-model="profile.bio"></textarea>
+                        </label>
+                        <button class="btn" id="profile-submit-btn">
+                            Отправить
+                        </button>
+                    </form>
+                </div>
+            </section>
+            <section class="section"> 
+                <div class="container">
+                    <h2 class="title-h2">
+
+                    </h2>
+                </div>
+            </section>
+            <section class="section"> 
+                <div class="container">
+                    <h2 class="title-h2">
+
+                    </h2>
+                </div>
+            </section>
+            <section class="section"> 
+                <div class="container">
+                    <h2 class="title-h2">
+
+                    </h2>
+                </div>
+            </section>
+            <section class="section"> 
+                <div class="container">
+                    <h2 class="title-h2">
+
+                    </h2>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

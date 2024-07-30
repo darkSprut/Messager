@@ -1,0 +1,43 @@
+.user-badge {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+    border-radius: var(--border-radius);
+}
+
+.user-badge:hover {
+    color: var(--color-theme-light);
+    transition: color 0.2s ease-in-out;
+}
+
+.user-badge:focus-visible {
+    outline: none;
+    outline: 5px solid var(--outline-color);
+}
+
+.user-badge:active {
+    color: var(--color-theme-dark);
+}
+
+.profile-content__img {
+    width: 200px;
+    margin-bottom: var(--gap);
+}
+
+.profile-content__item {
+    margin-bottom: var(--gap);
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    margin-bottom: var(--gap);
+}
+
+.profile-change-err {
+    margin-bottom: var(--gap);
+    color: red;
+}
