@@ -9,56 +9,65 @@ import re
 from .models import Profile, Avatar
 
 
-def get_tokens_yandex_middleware(get_response):
-    protect_list = [
-        reverse('sign-in'), reverse('yandex-sign'), reverse('callback-yandex'),
-    ]
+class BaseYandexMiddleware:
 
-    def middleware(request):
-        if request.path not in protect_list and not re.search(r'admin', request.path):
-            if not request.user.is_authenticated:
-                code = request.session.get("code")
-                code_verifier = request.session.get("code_verifier")
-                tokens = AuthenticateYandex.get_tokens_yandex(code=code, code_verifier=code_verifier)
-                request.session["access_token"] = tokens.get("access_token")
-                request.session["refresh_token"] = tokens.get("refresh_token")
-        response = get_response(request)
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.protect_list_url = [
+            reverse('auth_app:sign-in'), reverse('auth_app:yandex-sign'), reverse('auth_app:callback-yandex')
+        ]
+
+    def check_request(self, request):
+        if (request.path not in self.protect_list_url
+                and not re.search(r'admin', request.path))\
+                and not request.user.is_authenticated:
+            return True
+        return False
+
+
+class GetTokensYandexMiddleware(BaseYandexMiddleware):
+
+    def __call__(self, request):
+        if self.check_request(request):
+            code = request.session.get("code")
+            code_verifier = request.session.get("code_verifier")
+            tokens = AuthenticateYandex.get_tokens_yandex(code=code, code_verifier=code_verifier)
+            request.session["access_token"] = tokens.get("access_token")
+            request.session["refresh_token"] = tokens.get("refresh_token")
+        response = self.get_response(request)
         return response
-    return middleware
 
 
-def yandex_auth_middleware(get_response):
-    protect_list = [
-        reverse('sign-in'), reverse('yandex-sign'), reverse('callback-yandex'),
-    ]
-    redirect_url = reverse("sign-in")
+class AuthYandexMiddleware(BaseYandexMiddleware):
 
-    def middleware(request):
-        if request.path not in protect_list and not re.search(r'admin', request.path):
-            if not request.user.is_authenticated:
-                everything_all_right = False
-                access_token = request.session.get("access_token")
-                refresh_token = request.session.get("refresh_token")
-                scope = AuthenticateYandex.get_scope_yandex(access_token=access_token, refresh_token=refresh_token)
-                if scope:
-                    data = scope.get("payload")
-                    pk = data.get("uid")
-                    login_name = data.get("login")
-                    try:
-                        user = User.objects.get(pk=pk)
-                    except ObjectDoesNotExist as err:
-                        logging.info(err)
-                        user = User.objects.create_user(pk=pk, username=login_name)
-                        profile = Profile.objects.create(user=user)
-                        Avatar.objects.create(profile=profile)
-                    request.user = user
-                    login(request, user)
-                    everything_all_right = True
+    def __init__(self, get_response):
+        super().__init__(get_response)
+        self.redirect_url = reverse("auth_app:sign-in")
 
-                if not everything_all_right:
-                    return redirect(redirect_url)
-
-        response = get_response(request)
+    def __call__(self, request):
+        if self.check_request(request):
+            access_token = request.session.get("access_token")
+            refresh_token = request.session.get("refresh_token")
+            scope = AuthenticateYandex.get_scope_yandex(access_token=access_token, refresh_token=refresh_token)
+            if scope:
+                user = self.get_or_create_user(scope=scope)
+                request.user = user
+                login(request, user)
+            else:
+                return redirect(self.redirect_url)
+        response = self.get_response(request)
         return response
-    return middleware
 
+    @staticmethod
+    def get_or_create_user(scope):
+        data = scope.get("payload")
+        pk = data.get("uid")
+        login_name = data.get("login")
+        try:
+            user = User.objects.get(pk=pk)
+        except ObjectDoesNotExist as err:
+            logging.info(err)
+            user = User.objects.create_user(pk=pk, username=login_name)
+            profile = Profile.objects.create(user=user)
+            Avatar.objects.create(profile=profile)
+        return user

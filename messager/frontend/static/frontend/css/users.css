@@ -1,0 +1,61 @@
+.form-search-user {
+    display: flex;
+    align-items: flex-end;
+    width: 30%;
+    margin-bottom: var(--gap);
+    gap: var(--gap);
+}
+
+.label-search-user {
+    margin: 0;
+}
+
+.btn-searh-user {
+    height: min-content;
+}
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    overflow-y: scroll;
+}
+
+.users-list__item {
+    width: 28%;
+}
+
+.users-list__item:not(:last-child) {
+    margin-bottom: var(--gap);
+}
+
+.users-article-wrap {
+    padding: var(--gap);
+    border: 1px solid var(--color-theme);
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    cursor: pointer;
+    background-color: transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.users-article-wrap:hover {
+    background-color: var(--color-theme-light);
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.users-article-wrap:focus-visible {
+    outline: none;
+    outline: 5px solid var(--outline-color);
+}
+
+.users-article-wrap:active {
+    background-color: var(--color-theme-dark);
+    color: white;
+}
+
+.users-article__img {
+    width: 60px;
+}

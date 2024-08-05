@@ -170,7 +170,6 @@ h1, h2, h3, h4, h5, p {
     display: block;
     padding: 10px;
     background-color: var(--color-theme);
-    border-radius: var(--border-radius);
     color: white;
     transition: background-color, 0.2s ease-in-out;
     cursor: pointer;
@@ -205,11 +204,14 @@ h1, h2, h3, h4, h5, p {
 .link:focus-visible {
     outline: none;
     outline: 5px solid var(--outline-color);
-    border-radius: var(--border-radius);
 }
 
 .link:active {
     color: var(--color-theme-dark);
+}
+
+.img-min {
+    width: 50px;
 }
 
 .title-h2 {
@@ -244,7 +246,6 @@ h1, h2, h3, h4, h5, p {
     padding: 10px;
     min-width: 100px;
     border: 1px solid var(--color-theme);
-    border-radius: var(--border-radius);
     width: 100%;
 }
 
@@ -255,7 +256,6 @@ h1, h2, h3, h4, h5, p {
 .input:focus-visible, .textarea:focus-visible {
     outline: none;
     outline: 5px solid var(--outline-color);
-    border-radius: var(--border-radius);
 }
 
 .nav__list {

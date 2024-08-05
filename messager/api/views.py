@@ -2,42 +2,56 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from .serializers import ProfileSerializer, UserSerializers, ProfileSimpleSerializer, ErrorsSerializer
+from .serializers import ProfileSerializer, UsersSerializer
+from django.contrib.auth.models import User
 from auth_app.models import Profile, Avatar
 from rest_framework import status
-from django.views.generic import View
-from django.http.request import HttpRequest
-from django.http.response import HttpResponse
+from django.db.models import ObjectDoesNotExist
+
 # Create your views here.
 
 
-class ProfileAPIView(APIView):
+class GetUser(APIView):
 
-    def get(self, request: Request) -> Response:
-        profile = request.user.profile
-        serialised = ProfileSerializer(profile)
-        return Response(serialised.data)
+    def get(self, request: Request, *args, **kwargs):
+        serialized = UsersSerializer(request.user, many=False)
+        return Response(serialized.data)
 
-    def post(self, request: Request) -> Response:
+    def put(self, request: Request) -> Response:
         user = request.user
-        serialize = ProfileSimpleSerializer(data=request.data)
+        profile = Profile.objects.get(user=user)
+        serialize = ProfileSerializer(data=request.data)
         if serialize.is_valid():
-            profile = Profile.objects.filter(user=user)
-            profile.update(**serialize.validated_data)
+            serialize.update(profile, serialize.validated_data)
             return Response()
         else:
-            serialize_errors_data = ErrorsSerializer(serialize.errors).data()
-            return Response(data=serialize_errors_data, status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response(data=serialize.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
-class ChangeAvatarView(View):
+class GetUsers(APIView):
 
-    def post(self, request: HttpRequest) -> HttpResponse:
+    def get(self, request: Request, *args, **kwargs) -> Response:
+        username = request.GET.get("username")
+        if username:
+            users = User.objects.filter(username__icontains=username)
+        else:
+            users = User.objects.all()
+        serialized = UsersSerializer(users, many=True)
+        return Response(serialized.data)
+
+
+class ChangeAvatar(APIView):
+
+    def post(self, request: Request) -> Response:
         if request.FILES:
             user = request.user
             file = request.FILES.get("avatar_form")
             profile = Profile.objects.get(user=user)
-            avatar = Avatar.objects.get(profile=profile)
-            avatar.delete()
-            Avatar.objects.create(image=file, profile=profile)
-        return HttpResponse()
+            try:
+                avatar = Avatar.objects.get(profile__user=user)
+            except ObjectDoesNotExist as err:
+                avatar = Avatar.objects.create(image=file, profile=profile)
+            else:
+                avatar.delete()
+                Avatar.objects.create(image=file, profile=profile)
+        return Response()

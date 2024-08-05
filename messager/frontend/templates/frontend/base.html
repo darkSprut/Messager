@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{% static 'frontend/css/normalize.css' %}"/>
     <link rel="stylesheet" href="{% static 'frontend/css/style.css' %}"/>
     <link rel="stylesheet" href="{% static 'frontend/css/profile.css' %}"/>
+    <link rel="stylesheet" href="{% static 'frontend/css/users.css' %}"/>
     <script src="{% static 'frontend/vue-3.4.30/package/dist/vue.global.js' %}"></script>
     <script src="{% static 'frontend/axios-1.7.2/package/dist/axios.min.js' %}"></script>
     <script defer src="{% static 'frontend/scripts/app.js' %}" type="module"></script>
@@ -27,8 +28,8 @@
                 <nav class="nav">
                     <ul class="nav__list">
                         <li class="nav__item">
-                            <a class="nav__link link" href="#">
-                                link
+                            <a class="nav__link link" href="#" id="users-link" @click="getUsers()">
+                                Пользователи
                             </a>
                         </li>
                         <li class="nav__item">
@@ -51,12 +52,12 @@
                 {% if user.is_authenticated %}
                 <div class="header__block flex-row">
                     <button class="user-badge" tabindex="0" id="user-badge">
-                        <img :src="avatar.image" :alt="avatar.alt" width="50">
+                        <img class="img-min" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
                         <span>
                             ${ user.username }$
                         </span>
                     </button> 
-                    <a class="btn" href="{% url 'log-out' %}">
+                    <a class="btn" href="{% url 'auth_app:log-out' %}">
                         Выйти
                     </a>
                 </div>
@@ -64,13 +65,13 @@
             </div>
         </header>
         <main class="main">
-            <section class="section section--show" id="profile-section">
+            <section class="section" id="profile-section">
                 <div class="container">
                     <h2 class="title-h2">
                         Профиль
                     </h2>
                     <div class="profile-content">
-                        <img class="profile-content__img" :src="avatar.image" :alt="avatar.alt">
+                        <img class="profile-content__img" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
                         <ul class="profile-content__list">
                             <li class="profile-content__item">
                                 <h3 class="title-h3">
@@ -85,7 +86,7 @@
                                     Имя:
                                 </h3>
                                 <p class="prfile-content__text">
-                                    ${ profile.name }$
+                                    ${ user.profile.name }$
                                 </p>
                             </li>
                             <li class="profile-content__item">
@@ -93,7 +94,7 @@
                                     Возраст:
                                 </h3>
                                 <p class="prfile-content__text">
-                                    ${ profile.age }$
+                                    ${ user.profile.age }$
                                 </p>
                             </li>
                             <li class="profile-content__item">
@@ -101,7 +102,7 @@
                                     О себе:
                                 </h3>
                                 <p class="prfile-content__text">
-                                    ${ profile.bio }$
+                                    ${ user.profile.bio }$
                                 </p>
                             </li>
                         </ul>
@@ -116,9 +117,7 @@
                     <h2 class="title-h2">
                         Редактировать профиль
                     </h2>
-                    <p v-if="errors" class="profile-change-err">
-                        ${ errors }$
-                    </p>
+                    <img v-if="user.profile.avatar.image" class="profile-content__img" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
                     <form class="profile-form" method="post" action="#" @submit.prevent="changeAvatar" enctype="multipart/form-data" id="form-avatar">
                         {% csrf_token %}
                         <label class="label"> avatar
@@ -128,16 +127,24 @@
                             Отправить фото
                         </button>
                     </form>
+                    <ul v-if="errors" class="profile-change-err">
+                        <ul v-for="key, val in errors">
+                            ${ val }$:
+                            <li v-for="err in key">
+                                ${ err }$
+                            </li>
+                        </ul>
+                    </ul>
                     <form class="profile-form" method="post" action="#" @submit.prevent="changeProfile">
                         {% csrf_token %}
                         <label class="label"> Имя
-                            <input class="input" type="text" v-model="profile.name">
+                            <input class="input" type="text" v-model="user.profile.name">
                         </label>
                         <label class="label">Возраст
-                            <input class="input" type="number" max="100" min="0" v-model="profile.age">
+                            <input class="input" type="number" max="100" min="0" v-model="user.profile.age">
                         </label>
                         <label class="label">О себе
-                            <textarea class="textarea" v-model="profile.bio"></textarea>
+                            <textarea class="textarea" v-model="user.profile.bio"></textarea>
                         </label>
                         <button class="btn" id="profile-submit-btn">
                             Отправить
@@ -145,11 +152,31 @@
                     </form>
                 </div>
             </section>
-            <section class="section"> 
+            <section class="section section--show" id="section-users"> 
                 <div class="container">
                     <h2 class="title-h2">
-
+                        Пользователи
                     </h2>
+                    <form class="form-search-user">
+                        {% csrf_token %}
+                        <label class="label label-search-user">Найти по username
+                            <input type="text" class="input" id="search-username-input" name="username" v-model="username">
+                        </label>
+                    </form>
+                    <div class="users-content">
+                        <ul v-if="users_filled" class="users-list">
+                            <li v-for="user in users" class="users-list__item">
+                                <article class="users-article">
+                                    <a class="users-article-wrap" tabindex="0">
+                                        <img class="img-min" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
+                                        <p class="users-article__text">
+                                            ${ user.username }$
+                                        </p> 
+                                    </a>
+                                </article>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </section>
             <section class="section"> 

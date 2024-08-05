@@ -1,18 +1,8 @@
-import logging
-import time
-
 from django.shortcuts import render, redirect, reverse
-from rest_framework.views import APIView
-from rest_framework.request import Request
-from rest_framework.response import Response
 from django.http import HttpRequest, HttpResponse
 from django.views.generic import View, TemplateView
 import os
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.cache import caches
-from .auth_yandex import AuthenticateYandex
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from oauthlib import oauth2
 
 
@@ -35,16 +25,13 @@ class SignYandexView(View):
 class CallbackYandexView(View):
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        context = {
-
-        }
         code = request.GET.get('code')
         request.session["code"] = code
-        return render(request=request, template_name='auth_app/sign-in-callback.html', context=context)
+        return render(request=request, template_name='auth_app/sign-in-callback.html')
 
 
 class LogOutView(View):
 
     def get(self, request: HttpRequest) -> HttpResponse:
         logout(request)
-        return redirect(reverse("sign-in"))
+        return redirect(reverse("auth_app:sign-in"))

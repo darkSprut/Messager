@@ -1,7 +1,13 @@
 from django.urls import path, include
-from .views import ProfileAPIView, ChangeAvatarView
+from .views import ChangeAvatar, GetUser, GetUsers
+from rest_framework.urlpatterns import format_suffix_patterns
+
+app_name = 'api'
 
 urlpatterns = [
-    path('profile/', ProfileAPIView.as_view(), name="api-profile"),
-    path('change-avatar/', ChangeAvatarView.as_view(), name="change-avatar"),
+    path('change-avatar/', ChangeAvatar.as_view(), name="change-avatar"),
+    path('get-change-user/', GetUser.as_view(), name="get-user"),
+    path('get-users/', GetUsers.as_view(), name="get-users"),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

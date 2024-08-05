@@ -55,8 +55,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'auth_app.middleware.get_tokens_yandex_middleware',
-    'auth_app.middleware.yandex_auth_middleware',
+
+    'auth_app.middleware.GetTokensYandexMiddleware',
+    'auth_app.middleware.AuthYandexMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

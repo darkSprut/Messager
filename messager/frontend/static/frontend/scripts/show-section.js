@@ -28,3 +28,11 @@ document.addEventListener("change-profile-ok", function() {
     profile_section.classList.add("section--show")
 })
 
+let users_link = document.querySelector("#users-link");
+let section_users = document.querySelector("#section-users");
+
+users_link.addEventListener("click", function() {
+    removeShowClass()
+    section_users.classList.add("section--show")
+})
+

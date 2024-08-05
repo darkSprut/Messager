@@ -4,7 +4,6 @@
     align-items: center;
     cursor: pointer;
     transition: color 0.2s ease-in-out;
-    border-radius: var(--border-radius);
 }
 
 .user-badge:hover {

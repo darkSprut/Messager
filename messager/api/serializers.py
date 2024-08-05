@@ -1,48 +1,33 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from auth_app.models import Profile, Avatar
 from django.contrib.auth.models import User
 
 
-class AvatarSerializer(ModelSerializer):
+class AvatarSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = "__all__"
         model = Avatar
 
 
-class UserSerializers(ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
+    avatar = AvatarSerializer(many=False, read_only=True)
 
     class Meta:
-        fields = "pk", "username",
+        fields = "name", "age", "bio", "avatar",
+        model = Profile
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get("name", instance.name)
+        instance.age = validated_data.get("age", instance.name)
+        instance.bio = validated_data.get("bio", instance.name)
+        instance.save()
+        return instance
+
+
+class UsersSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(many=False, read_only=True)
+
+    class Meta:
         model = User
-
-
-class ProfileSerializer(ModelSerializer):
-    user = UserSerializers(many=False)
-    avatar = AvatarSerializer(many=False)
-
-    class Meta:
-        fields = "user", "name", "age", "bio", "avatar", "created_at",
-        model = Profile
-
-
-class ProfileSimpleSerializer(ModelSerializer):
-
-    class Meta:
-        fields = "name", "age", "bio",
-        model = Profile
-
-
-class ErrorsSerializer:
-    def __init__(self, data):
-        self._data = data
-        self._serialize_data = self.serialize()
-
-    def serialize(self):
-        error_dict = {"errors": {}}
-        for key in self._data.keys():
-            error_dict["errors"][key] = self._data.get(key)[0].title()
-        return error_dict
-
-    def data(self):
-        return self._serialize_data
+        fields = "pk", "username", "profile",

@@ -1,13 +1,15 @@
 import { profile_mixin } from "./profile_mixin.js";
+import { users_mixin } from "./users_mixin.js";
 
 const x = Vue.createApp(
     {
         delimiters: ['${', '}$'],
-        mixins: [profile_mixin],
+        mixins: [profile_mixin, users_mixin],
         methods: {
             defaulSettingsAxios: function() {
                 axios.defaults.headers.common['X-CSRFToken'] = this.getCookie('csrftoken');
                 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+                axios.defaults.headers.put['Content-Type'] = 'application/json;charset=utf-8';
             },
             getCookie: function(key_cookie) {
                 let cookies_data = {};
