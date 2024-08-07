@@ -1,7 +1,7 @@
 const profile_mixin = {
     methods: {
         getUser: function() {
-            axios.get("/api/get-change-user/")
+            axios.get("/api/get-change-profile/")
             .then(resp => {
                 this.user = resp.data
             })
@@ -13,13 +13,10 @@ const profile_mixin = {
                 age: this.user.profile.age,
                 bio: this.user.profile.bio,
             }
-            axios.put("/api/get-change-user/", JSON.stringify({...data}))
+            axios.put("/api/get-change-profile/", JSON.stringify({...data}))
             .then(resp => {
                 if (resp.status == 200) {
-                    let event = new Event("change-profile-ok", {
-                        bubbles: true,
-                    })
-                    document.dispatchEvent(event)
+                    this.addShowClass(this.profile_section)
                     this.errors = {}
                     this.getUser()
                 }
@@ -42,8 +39,6 @@ const profile_mixin = {
             })
 
         },
-
-        
     },
     data() {
         return {
@@ -59,6 +54,7 @@ const profile_mixin = {
             },
             errors: {},
             avatar_form: null,
+            profile_section: "#profile-section",
         }
     },
     mounted() {

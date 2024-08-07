@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from auth_app.models import Profile, Avatar
+from .models import Message, Chat
 from django.contrib.auth.models import User
 
 
@@ -31,3 +32,29 @@ class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "pk", "username", "profile",
+
+
+class MessageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Message
+        fields = "__all__"
+
+    def create(self, validated_data):
+        instance = Message.objects.create(**validated_data)
+        return instance
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data.get("created_at"):
+            data["created_at"] = instance.created_at.strftime("%d/%m/%Y %H:%M:%S")
+        return data
+
+
+class ChatSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Chat
+        fields = "pk", "users", "messages", "update_at",
+

@@ -4,6 +4,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
         {% block title %}
 
@@ -14,10 +15,10 @@
     <link rel="stylesheet" href="{% static 'frontend/css/style.css' %}"/>
     <link rel="stylesheet" href="{% static 'frontend/css/profile.css' %}"/>
     <link rel="stylesheet" href="{% static 'frontend/css/users.css' %}"/>
+    <link rel="stylesheet" href="{% static 'frontend/css/chats.css' %}"/>
     <script src="{% static 'frontend/vue-3.4.30/package/dist/vue.global.js' %}"></script>
     <script src="{% static 'frontend/axios-1.7.2/package/dist/axios.min.js' %}"></script>
     <script defer src="{% static 'frontend/scripts/app.js' %}" type="module"></script>
-    <script defer src="{% static 'frontend/scripts/show-section.js' %}" type="module"></script>
     {% block mixin %}
     {% endblock %}
 </head>
@@ -28,7 +29,7 @@
                 <nav class="nav">
                     <ul class="nav__list">
                         <li class="nav__item">
-                            <a class="nav__link link" href="#" id="users-link" @click="getUsers()">
+                            <a class="nav__link link" href="#" id="users-link" @click="searchUsername(), addShowClass('#section-users')">
                                 Пользователи
                             </a>
                         </li>
@@ -51,7 +52,7 @@
                 </nav>
                 {% if user.is_authenticated %}
                 <div class="header__block flex-row">
-                    <button class="user-badge" tabindex="0" id="user-badge">
+                    <button class="user-badge" tabindex="0" id="user-badge" @click="addShowClass('#profile-section')">
                         <img class="img-min" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
                         <span>
                             ${ user.username }$
@@ -70,7 +71,7 @@
                     <h2 class="title-h2">
                         Профиль
                     </h2>
-                    <div class="profile-content">
+                    <div class="content">
                         <img class="profile-content__img" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
                         <ul class="profile-content__list">
                             <li class="profile-content__item">
@@ -106,7 +107,7 @@
                                 </p>
                             </li>
                         </ul>
-                        <button class="btn" id="profile-change-btn">
+                        <button class="btn" id="profile-change-btn" @click="addShowClass('#profile-section-change')">
                             Редактировать
                         </button>
                     </div>
@@ -117,57 +118,59 @@
                     <h2 class="title-h2">
                         Редактировать профиль
                     </h2>
-                    <img v-if="user.profile.avatar.image" class="profile-content__img" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
-                    <form class="profile-form" method="post" action="#" @submit.prevent="changeAvatar" enctype="multipart/form-data" id="form-avatar">
-                        {% csrf_token %}
-                        <label class="label"> avatar
-                            <input type="file" name="avatar_form" accept="image/*">
-                        </label>
-                        <button class="btn">
-                            Отправить фото
-                        </button>
-                    </form>
-                    <ul v-if="errors" class="profile-change-err">
-                        <ul v-for="key, val in errors">
-                            ${ val }$:
-                            <li v-for="err in key">
-                                ${ err }$
-                            </li>
+                    <div class="content">
+                        <img v-if="user.profile.avatar.image" class="profile-content__img" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
+                        <form class="profile-form" method="post" action="#" @submit.prevent="changeAvatar" enctype="multipart/form-data" id="form-avatar">
+                            {% csrf_token %}
+                            <label class="label"> avatar
+                                <input type="file" name="avatar_form" accept="image/*">
+                            </label>
+                            <button class="btn">
+                                Изменить фото
+                            </button>
+                        </form>
+                        <ul v-if="errors" class="profile-change-err">
+                            <ul v-for="key, val in errors">
+                                ${ val }$:
+                                <li v-for="err in key">
+                                    ${ err }$
+                                </li>
+                            </ul>
                         </ul>
-                    </ul>
-                    <form class="profile-form" method="post" action="#" @submit.prevent="changeProfile">
-                        {% csrf_token %}
-                        <label class="label"> Имя
-                            <input class="input" type="text" v-model="user.profile.name">
-                        </label>
-                        <label class="label">Возраст
-                            <input class="input" type="number" max="100" min="0" v-model="user.profile.age">
-                        </label>
-                        <label class="label">О себе
-                            <textarea class="textarea" v-model="user.profile.bio"></textarea>
-                        </label>
-                        <button class="btn" id="profile-submit-btn">
-                            Отправить
-                        </button>
-                    </form>
+                        <form class="profile-form" method="post" action="#" @submit.prevent="changeProfile">
+                            {% csrf_token %}
+                            <label class="label"> Имя
+                                <input class="input" type="text" v-model="user.profile.name">
+                            </label>
+                            <label class="label">Возраст
+                                <input class="input" type="number" max="100" min="0" v-model="user.profile.age">
+                            </label>
+                            <label class="label">О себе
+                                <textarea class="textarea" v-model="user.profile.bio"></textarea>
+                            </label>
+                            <button class="btn" id="profile-submit-btn">
+                                Отправить
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </section>
-            <section class="section section--show" id="section-users"> 
+            <section class="section" id="section-users"> 
                 <div class="container">
                     <h2 class="title-h2">
                         Пользователи
                     </h2>
-                    <form class="form-search-user">
-                        {% csrf_token %}
-                        <label class="label label-search-user">Найти по username
-                            <input type="text" class="input" id="search-username-input" name="username" v-model="username">
-                        </label>
-                    </form>
-                    <div class="users-content">
+                    <div class="content">
+                        <form class="form-search-user">
+                            {% csrf_token %}
+                            <label class="label label-search-user">Найти по username
+                                <input type="text" class="input" id="search-username-input" name="username" v-model="username">
+                            </label>
+                        </form>
                         <ul v-if="users_filled" class="users-list">
                             <li v-for="user in users" class="users-list__item">
                                 <article class="users-article">
-                                    <a class="users-article-wrap" tabindex="0">
+                                    <a class="users-article-wrap" tabindex="0" @click="addShowClass('#one-user'), getUsers(user.pk)">
                                         <img class="img-min" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
                                         <p class="users-article__text">
                                             ${ user.username }$
@@ -175,15 +178,84 @@
                                     </a>
                                 </article>
                             </li>
-                        </ul>
+                        </ul>                        
                     </div>
                 </div>
             </section>
-            <section class="section"> 
+            <section class="section section--show" id="one-user"> 
                 <div class="container">
                     <h2 class="title-h2">
-
+                        Пользователь "${ one_user.username }$"
                     </h2>
+                    <div class="content">
+                        <img class="profile-content__img" :src="one_user.profile.avatar.image" :alt="one_user.profile.avatar.alt">
+                        <ul class="profile-content__list">
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    username:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ one_user.username }$
+                                </p>
+                            </li>
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    Имя:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ one_user.profile.name }$
+                                </p>
+                            </li>
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    Возраст:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ one_user.profile.age }$
+                                </p>
+                            </li>
+                            <li class="profile-content__item">
+                                <h3 class="title-h3">
+                                    О себе:
+                                </h3>
+                                <p class="prfile-content__text">
+                                    ${ one_user.profile.bio }$
+                                </p>
+                            </li>
+                        </ul>
+                        <button class="btn" @click="addShowClass('#send-message'), getMessages(one_user.pk)">
+                            Написать сообщение
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <section class="section" id="send-message"> 
+                <div class="container">
+                    <h2 class="title-h2">
+                        Чат c "${ one_user.username }$"
+                    </h2>
+                    <div class="content">
+                        <ul class="send-message-list" id="message-list">
+                            <li v-for="elem in messages" class="send-message-list__item">
+                                <div class="message-block">
+                                    <p class="message-block__text">
+                                        ${ elem.message }$
+                                    </p>
+                                    <span class="message-block__span">
+                                        ${ elem.created_at }$
+                                    </span>
+                                </div>
+                                
+                            </li>
+                        </ul>
+                        <label class="label">сообщение
+                            <textarea class="textarea" name="message" v-model="message">
+                            </textarea>
+                        </label>
+                        <button class="btn" @click="sendMessage(one_user.pk)">
+                            Отправить
+                        </button>
+                    </div>
                 </div>
             </section>
             <section class="section"> 

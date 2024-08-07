@@ -1,12 +1,14 @@
+
 .form-search-user {
     display: flex;
     align-items: flex-end;
-    width: 30%;
+    width: 100%;
     margin-bottom: var(--gap);
     gap: var(--gap);
 }
 
 .label-search-user {
+    width: 100%;
     margin: 0;
 }
 
@@ -19,10 +21,7 @@
     flex-direction: column;
     height: 400px;
     overflow-y: scroll;
-}
-
-.users-list__item {
-    width: 28%;
+    width: 100%;
 }
 
 .users-list__item:not(:last-child) {
@@ -49,6 +48,7 @@
 .users-article-wrap:focus-visible {
     outline: none;
     outline: 5px solid var(--outline-color);
+    outline-offset: -4px;
 }
 
 .users-article-wrap:active {

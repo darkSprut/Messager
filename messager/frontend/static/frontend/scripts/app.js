@@ -1,10 +1,11 @@
 import { profile_mixin } from "./profile_mixin.js";
 import { users_mixin } from "./users_mixin.js";
+import { chats } from "./chats.js";
 
 const x = Vue.createApp(
     {
         delimiters: ['${', '}$'],
-        mixins: [profile_mixin, users_mixin],
+        mixins: [profile_mixin, users_mixin, chats],
         methods: {
             defaulSettingsAxios: function() {
                 axios.defaults.headers.common['X-CSRFToken'] = this.getCookie('csrftoken');
@@ -25,11 +26,25 @@ const x = Vue.createApp(
                 return cookies_data[key_cookie] ? cookies_data[key_cookie] : null;
             },
 
+            removeShowClass: function() {
+                let sections = document.querySelectorAll(this.section_class);
+                sections.forEach(element => {
+                    element.classList.remove(this.show_section_class)
+                });
+            },
+
+            addShowClass: function(elem_str) {
+                this.removeShowClass()
+                let elem = document.querySelector(elem_str)
+                elem.classList.add(this.show_section_class)
+            }
+
         },
 
         data() {
             return {
-                // username: "main app",
+                show_section_class: "section--show",
+                section_class: "section",
             }
         },
 
