@@ -37,7 +37,22 @@ const x = Vue.createApp(
                 this.removeShowClass()
                 let elem = document.querySelector(elem_str)
                 elem.classList.add(this.show_section_class)
-            }
+
+                this.rememberSection(elem.id)
+            },
+
+            rememberSection: function(elem_id) {
+                document.cookie = `current_section=${elem_id}`
+            },
+
+            currentSection: function() {
+                let current_section_str = this.getCookie('current_section')
+                if (current_section_str) {
+                    let current_section = document.querySelector(`#${current_section_str}`)
+                    this.removeShowClass()
+                    current_section.classList.add(this.show_section_class)
+                }
+            },
 
         },
 
@@ -50,6 +65,8 @@ const x = Vue.createApp(
 
         mounted() {
             this.defaulSettingsAxios()
+            this.currentSection()
+            this.getMessages(this.getCookie('id_one_user'))
         },
     }
 ).mount('#body');

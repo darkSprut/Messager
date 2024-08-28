@@ -17,6 +17,8 @@
 }
 
 .users-list__link {
+    flex-direction: row;
+    align-items: center;
     background-image: url("../img/bg-user-card.jpg");
 }
 
