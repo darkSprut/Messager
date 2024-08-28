@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from django.db.models import ObjectDoesNotExist
 import re
 from .models import Profile, Avatar
+from api.models import ChatsLog
 
 
 class BaseYandexMiddleware:
@@ -54,7 +55,9 @@ class AuthYandexMiddleware(BaseYandexMiddleware):
                 request.user = user
                 login(request, user)
             else:
+                print("redirect")
                 return redirect(self.redirect_url)
+
         response = self.get_response(request)
         return response
 
@@ -70,4 +73,5 @@ class AuthYandexMiddleware(BaseYandexMiddleware):
             user = User.objects.create_user(pk=pk, username=login_name)
             profile = Profile.objects.create(user=user)
             Avatar.objects.create(profile=profile)
+            ChatsLog.objects.create(user=user)
         return user

@@ -3,12 +3,21 @@
     gap: 10px;
     align-items: center;
     cursor: pointer;
-    transition: color 0.2s ease-in-out;
+    border-radius: var(--border-radius);
+    outline-color: transparent;
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    transition: all 0.2s ease-in-out;
+}
+
+.user-badge span {
+    color: var(--font-color);
 }
 
 .user-badge:hover {
-    color: var(--color-theme-light);
-    transition: color 0.2s ease-in-out;
+    outline-color: var(--font-color);
+    transition: all 0.2s ease-in-out;
 }
 
 .user-badge:focus-visible {
@@ -16,17 +25,23 @@
     outline: 5px solid var(--outline-color);
 }
 
-.user-badge:active {
-    color: var(--color-theme-dark);
+.user-badge:active .img-min {
+    filter: grayscale(80%);
 }
 
 .profile-content__img {
     width: 100%;
     margin-bottom: var(--gap);
+    border-radius: var(--border-radius);
 }
 
-.profile-content__item {
+.profile-table {
     margin-bottom: var(--gap);
+}
+
+.profile-table__td {
+    padding: var(--gap) var(--gap) var(--gap) 0;
+    vertical-align: text-top;
 }
 
 .profile-form {

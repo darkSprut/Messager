@@ -29,24 +29,17 @@
                 <nav class="nav">
                     <ul class="nav__list">
                         <li class="nav__item">
-                            <a class="nav__link link" href="#" id="users-link" @click="searchUsername(), addShowClass('#section-users')">
+                            <a class="nav__link link" href="#" id="users-link" @click="addShowClass('#section-users')">
                                 Пользователи
                             </a>
                         </li>
                         <li class="nav__item">
-                            <a class="nav__link link" href="#">
-                                link
+                            <a class="nav__link link" href="#" id="my-chats" @click="addShowClass('#my-chats-section'), getChats()">
+                                Мои чаты
                             </a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link link" href="#">
-                                link
-                            </a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link link" href="#">
-                                link
-                            </a>
+                            <span v-if="total_new_message !=0 " class="chat-item__count-message total-count-message">
+                                ${ total_new_message }$
+                            </span>
                         </li>
                     </ul>
                 </nav>
@@ -66,47 +59,55 @@
             </div>
         </header>
         <main class="main">
-            <section class="section" id="profile-section">
+            <section class="section section--show" id="profile-section">
                 <div class="container">
                     <h2 class="title-h2">
                         Профиль
                     </h2>
                     <div class="content">
                         <img class="profile-content__img" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
-                        <ul class="profile-content__list">
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    username:
-                                </h3>
-                                <p class="prfile-content__text">
+                        <table class="profile-table">
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        Username:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
                                     ${ user.username }$
-                                </p>
-                            </li>
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    Имя:
-                                </h3>
-                                <p class="prfile-content__text">
-                                    ${ user.profile.name }$
-                                </p>
-                            </li>
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    Возраст:
-                                </h3>
-                                <p class="prfile-content__text">
+                                </td>
+                            </tr>
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        Имя:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
+                                    ${ user.profile.name }$  
+                                </td>
+                            </tr>
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        Возраст:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
                                     ${ user.profile.age }$
-                                </p>
-                            </li>
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    О себе:
-                                </h3>
-                                <p class="prfile-content__text">
+                                </td>
+                            </tr>
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        О&nbsp;себе:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
                                     ${ user.profile.bio }$
-                                </p>
-                            </li>
-                        </ul>
+                                </td>
+                            </tr>
+                        </table>
                         <button class="btn" id="profile-change-btn" @click="addShowClass('#profile-section-change')">
                             Редактировать
                         </button>
@@ -167,62 +168,68 @@
                                 <input type="text" class="input" id="search-username-input" name="username" v-model="username">
                             </label>
                         </form>
-                        <ul v-if="users_filled" class="users-list">
-                            <li v-for="user in users" class="users-list__item">
-                                <article class="users-article">
-                                    <a class="users-article-wrap" tabindex="0" @click="addShowClass('#one-user'), getUsers(user.pk)">
-                                        <img class="img-min" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
-                                        <p class="users-article__text">
-                                            ${ user.username }$
-                                        </p> 
-                                    </a>
-                                </article>
+                        <ul v-if="users_filled" class="base-list users-list">
+                            <li v-for="user in users" class="base-list__item">
+                                <a class="base-list__link users-list__link" tabindex="0" @click="addShowClass('#one-user'), getUsers(user.pk)" href="#">
+                                    <img class="img-min" :src="user.profile.avatar.image" :alt="user.profile.avatar.alt">
+                                    <p class="users-article__text">
+                                        ${ user.username }$
+                                    </p> 
+                                </a>
                             </li>
                         </ul>                        
                     </div>
                 </div>
             </section>
-            <section class="section section--show" id="one-user"> 
+            <section class="section" id="one-user"> 
                 <div class="container">
                     <h2 class="title-h2">
                         Пользователь "${ one_user.username }$"
                     </h2>
                     <div class="content">
                         <img class="profile-content__img" :src="one_user.profile.avatar.image" :alt="one_user.profile.avatar.alt">
-                        <ul class="profile-content__list">
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    username:
-                                </h3>
-                                <p class="prfile-content__text">
+                        <table class="profile-table">
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        Username:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
                                     ${ one_user.username }$
-                                </p>
-                            </li>
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    Имя:
-                                </h3>
-                                <p class="prfile-content__text">
-                                    ${ one_user.profile.name }$
-                                </p>
-                            </li>
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    Возраст:
-                                </h3>
-                                <p class="prfile-content__text">
+                                </td>
+                            </tr>
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        Имя:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
+                                    ${ one_user.profile.name }$  
+                                </td>
+                            </tr>
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        Возраст:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
                                     ${ one_user.profile.age }$
-                                </p>
-                            </li>
-                            <li class="profile-content__item">
-                                <h3 class="title-h3">
-                                    О себе:
-                                </h3>
-                                <p class="prfile-content__text">
+                                </td>
+                            </tr>
+                            <tr class="profile-table__tr">
+                                <td class="profile-table__td">
+                                    <h3 class="title-h3 margin-bottom-none">
+                                        О&nbsp;себе:
+                                    </h3>
+                                </td>
+                                <td class="profile-table__td">
                                     ${ one_user.profile.bio }$
-                                </p>
-                            </li>
-                        </ul>
+                                </td>
+                            </tr>
+                        </table>
                         <button class="btn" @click="addShowClass('#send-message'), getMessages(one_user.pk)">
                             Написать сообщение
                         </button>
@@ -235,9 +242,12 @@
                         Чат c "${ one_user.username }$"
                     </h2>
                     <div class="content">
-                        <ul class="send-message-list" id="message-list">
-                            <li v-for="elem in messages" class="send-message-list__item">
+                        <ul class="base-list message-list" id="message-list">
+                            <li v-for="elem in messages" class="base-list__item">
                                 <div class="message-block">
+                                    <span class="message-block__span message-sender">
+                                        ${ elem.sender.username }$
+                                    </span>
                                     <p class="message-block__text">
                                         ${ elem.message }$
                                     </p>
@@ -258,11 +268,34 @@
                     </div>
                 </div>
             </section>
-            <section class="section"> 
+            <section class="section" id="my-chats-section"> 
                 <div class="container">
                     <h2 class="title-h2">
-
+                        Мои чаты
                     </h2>
+                    <div class="content">
+                        <ul class="base-list chat-list">
+                            <li v-for="chat in chats" class="base-list__item chat-item base-list__link">
+                                    <ul class="flex-column">
+                                        <li v-for="chat_user in chat.users" class="flex-row">
+                                            <img class="img-min" :src="chat_user.profile.avatar.image" :alt="chat_user.profile.avatar.alt">
+                                            <p>
+                                                ${ chat_user.username }$
+                                            </p>
+                                            <p v-if="chat_user.pk != user.pk">
+                                                <a class="chat-trigger" @click="addShowClass('#send-message'), getUsers(chat_user.pk), getMessages(chat_user.pk)" href="#" tabindex="0"></a>                                            
+                                            </p>
+                                        </li>
+                                    </ul>
+                                <span class="message-block__span">
+                                    ${ chat.created_at }$
+                                </span>
+                                <span v-if="chat.new_message_count !=0 " class="chat-item__count-message">
+                                    ${ chat.new_message_count }$
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </section>
             <section class="section"> 

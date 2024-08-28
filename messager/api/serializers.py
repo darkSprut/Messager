@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from auth_app.models import Profile, Avatar
-from .models import Message, Chat
+from .models import Message, Chat, ChatsLog
 from django.contrib.auth.models import User
 
 
@@ -35,10 +35,11 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
+    sender = UsersSerializer(many=False, read_only=True)
 
     class Meta:
         model = Message
-        fields = "__all__"
+        fields = "recipient", "sender", "message", "created_at", "chat",
 
     def create(self, validated_data):
         instance = Message.objects.create(**validated_data)
@@ -56,5 +57,23 @@ class ChatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chat
-        fields = "pk", "users", "messages", "update_at",
+        fields = "pk", "users", "messages", "created_at",
 
+
+class SimpleChatSerializer(serializers.ModelSerializer):
+    users = UsersSerializer(many=True)
+
+    def __init__(self, *args, **kwargs):
+        self.user = User.objects.get(pk=kwargs.pop("user_pk"))
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Chat
+        fields = "pk", "users", "created_at",
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        chats_log = ChatsLog.objects.get(chat=instance.pk, user=self.user)
+        data["new_message_count"] = chats_log.new_message_count
+        data["created_at"] = instance.created_at.strftime("%d/%m/%Y %H:%M:%S")
+        return data

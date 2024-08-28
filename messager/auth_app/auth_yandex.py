@@ -54,7 +54,8 @@ class AuthenticateYandex:
 
             except jwt.exceptions.InvalidSignatureError as err:
                 logging.warning(err)
-
+            except jwt.exceptions.DecodeError as err:
+                logging.warning(err)
         return jwt_decode
 
     @classmethod

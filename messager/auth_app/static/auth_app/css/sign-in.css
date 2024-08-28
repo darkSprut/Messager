@@ -111,21 +111,38 @@ h1, h2, h3, h4, h5 {
 }
 
 .logo {
-    margin-bottom: 60px;
+    margin-bottom: 30px;
+}
+
+.text-logo {
+    margin-bottom: 30px;
 }
 
 .block {
+    position: relative;
     padding: 20px;
     border-radius: var(--border-radius);
-    background: linear-gradient(150deg, rgb(143, 238, 176) 1%, 18%, transparent 80%);
-    background-color: var(--color-theme);
-    filter: drop-shadow(2px 2px 2px var(--color-theme));
+    background: linear-gradient(150deg, rgb(106, 138, 117) 1%, 18%, transparent 80%);
+    background-color: rgb(136, 196, 136);
+}
+
+.block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../img/bg-sign-in.png");
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .title {
+    position: relative;
     font-weight: 500;
     margin-bottom: var(--gap);
-
+    z-index: 999;
 }
 
 .list__item {
@@ -135,7 +152,6 @@ h1, h2, h3, h4, h5 {
     padding: 10px;
     display: flex;
     justify-content: center;
-    filter: drop-shadow(1px 1px 1px white);
     transition: transform 0.2s ease-in-out;
 }
 

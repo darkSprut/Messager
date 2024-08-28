@@ -52,8 +52,8 @@ const users_mixin = {
         }
     },
     mounted() {
+        this.defaulSettingsAxios()
         this.searchUsername()
-        this.getUsers(this.getCookie('id_one_user'))
     }
 }
 

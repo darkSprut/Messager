@@ -58,6 +58,7 @@ const profile_mixin = {
         }
     },
     mounted() {
+        this.defaulSettingsAxios()
         this.getUser()
     }
 }

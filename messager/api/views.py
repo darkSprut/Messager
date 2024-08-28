@@ -2,12 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from .serializers import ProfileSerializer, UsersSerializer, MessageSerializer, ChatSerializer
+from .serializers import ProfileSerializer, UsersSerializer, MessageSerializer, ChatSerializer, SimpleChatSerializer
 from django.contrib.auth.models import User
 from auth_app.models import Profile, Avatar
 from rest_framework import status
 from django.db.models import ObjectDoesNotExist
-from .models import Chat
+from .models import Chat, Message, ChatsLog
 from django.db.models import Q
 
 # Create your views here.
@@ -69,8 +69,13 @@ class SendMessage(APIView):
 
     def get(self, request: Request, *args, **kwargs) -> Response:
         recipient = get_object_or_404(User, pk=request.query_params.get("recipient"))
+        user = request.user
         try:
-            chat = Chat.objects.get(Q(users__in=[recipient]) and Q(users__in=[request.user]))
+            chat = (Chat.objects.all().prefetch_related("users").filter(users__pk=user.pk)
+                    .get(users__pk=recipient.pk))
+            chats_log, created = ChatsLog.objects.get_or_create(user=user, chat=chat)
+            chats_log.new_message_count = 0
+            chats_log.save()
         except ObjectDoesNotExist as err:
             return Response()
         else:
@@ -78,9 +83,9 @@ class SendMessage(APIView):
             return Response(serialize.data)
 
     def post(self, request: Request, *args, **kwargs) -> Response:
-        request.data["sender"] = request.user.pk
         serialize = MessageSerializer(data=request.data, many=False)
         if serialize.is_valid():
+            serialize.validated_data["sender"] = request.user
             message = serialize.create(serialize.validated_data)
             self.add_message_to_chat(request=request, message=message)
             return Response(serialize.data)
@@ -88,13 +93,26 @@ class SendMessage(APIView):
 
     def add_message_to_chat(self, request: Request, message):
         recipient = get_object_or_404(User, pk=request.data.get("recipient"))
+        user = request.user
         try:
-            chat = Chat.objects.get(Q(users__in=[recipient]) and Q(users__in=[request.user]))
+            chat = (Chat.objects.all().prefetch_related("users").filter(users__pk=user.pk)
+                    .get(users__pk=recipient.pk))
         except ObjectDoesNotExist as err:
             chat = Chat.objects.create()
             chat.users.add(recipient.pk)
-            chat.users.add(request.user.pk)
+            chat.users.add(user.pk)
         finally:
             chat.messages.add(message)
-            # вызываем явно метод save, чтобы обновить временную метку
-            chat.save()
+            chats_log, created = ChatsLog.objects.get_or_create(user=recipient, chat=chat)
+            chats_log.new_message_count += 1
+            chats_log.save()
+
+
+class GetChats(APIView):
+
+    def get(self, request: Request, *args, **kwargs):
+        user = request.user
+        chat = Chat.objects.all().prefetch_related("users").filter(users__pk=user.pk)
+        serialized = SimpleChatSerializer(chat, user_pk=user.pk, many=True)
+        return Response(serialized.data)
+
