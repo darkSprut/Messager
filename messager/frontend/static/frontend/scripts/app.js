@@ -39,34 +39,55 @@ const x = Vue.createApp(
                 elem.classList.add(this.show_section_class)
 
                 this.rememberSection(elem.id)
+                this.getMessages()
+                this.updateCurrentChat(elem.id)
             },
 
             rememberSection: function(elem_id) {
-                document.cookie = `current_section=${elem_id}`
+                document.cookie = `current_section_id=${elem_id}`
             },
 
             currentSection: function() {
-                let current_section_str = this.getCookie('current_section')
+
+                /* функция, которая отображает последнюю просмотренную секцию перед обновлением страницы */
+                
+                let current_section_str = this.getCookie('current_section_id')
                 if (current_section_str) {
-                    let current_section = document.querySelector(`#${current_section_str}`)
-                    this.removeShowClass()
-                    current_section.classList.add(this.show_section_class)
+                    this.addShowClass(`#${current_section_str}`)
                 }
             },
+
+            updateCurrentChat: function(elem_id) {
+
+                /* если текущая секция это чат с пользователем, обновлять его */
+
+                if (elem_id == this.chat_section) {
+                    this.update_chat_interval_id = setInterval(
+                        this.getMessages
+                    , 4000)
+                } else {
+                    clearInterval(this.update_chat_interval_id)
+                }
+            }
 
         },
 
         data() {
             return {
+                /* имя класса, при добавлении которого отображается вабранная секция */
                 show_section_class: "section--show",
+                /* имя класса всех секций */
                 section_class: "section",
+                /* id секции с текущем чатом и сообщениями в нём */
+                chat_section: "send-message",
+                /* id планировщика обновления чата */
+                update_chat_interval_id: null,
             }
         },
 
         mounted() {
             this.defaulSettingsAxios()
             this.currentSection()
-            this.getMessages(this.getCookie('id_one_user'))
         },
     }
 ).mount('#body');

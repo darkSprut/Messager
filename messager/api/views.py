@@ -68,17 +68,19 @@ class ChangeAvatar(APIView):
 class SendMessage(APIView):
 
     def get(self, request: Request, *args, **kwargs) -> Response:
-        recipient = get_object_or_404(User, pk=request.query_params.get("recipient"))
+        recipient = request.query_params.get("recipient")
+        if recipient:
+            recipient = get_object_or_404(User, pk=request.query_params.get("recipient"))
         user = request.user
         try:
             chat = (Chat.objects.all().prefetch_related("users").filter(users__pk=user.pk)
                     .get(users__pk=recipient.pk))
-            chats_log, created = ChatsLog.objects.get_or_create(user=user, chat=chat)
-            chats_log.new_message_count = 0
-            chats_log.save()
         except ObjectDoesNotExist as err:
             return Response()
         else:
+            chats_log, created = ChatsLog.objects.get_or_create(user=user, chat=chat)
+            chats_log.new_message_count = 0
+            chats_log.save()
             serialize = ChatSerializer(chat, many=False)
             return Response(serialize.data)
 

@@ -14,7 +14,8 @@ const chats = {
         },
 
         getMessages: function(id) {
-            axios.get(`/api/messages/?recipient=${id}`)
+            let id_user = id ? id : this.getCookie('id_one_user');
+            axios.get(`/api/messages/?recipient=${id_user}`)
             .then(resp => {
                 this.messages = resp.data.messages
                 this.scrollBottom()
